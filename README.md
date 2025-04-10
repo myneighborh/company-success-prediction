@@ -1,4 +1,4 @@
-# AI Hackathon: Predicting Company Success
+# AI Hackathon: Company Success Prediction
 
 기업 데이터를 바탕으로 성공 확률(0~1)을 예측하는 해커톤입니다.
 기업의 재무 상태, 성장성, 고객 수, SNS 영향력 등의 다양한 지표를 활용하여 미래의 성공 가능성을 수치로 정량화합니다.

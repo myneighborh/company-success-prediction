@@ -9,9 +9,9 @@
 
 - 데이터: 기업 재무 및 성과 데이터 (train.csv, test.csv)  
 - 목표 변수: 성공확률 (0~1 사이의 연속 값)  
-- 모델: XGBoost Regressor  
-- 튜닝: Optuna 기반 하이퍼파라미터 최적화 (5-Fold)  
-- 최종 학습 및 예측: 10-Fold 교차 검증 앙상블
+- 모델: XGBoost Regressor
+- 튜닝: Optuna 기반 하이퍼파라미터 최적화
+- 최종 학습 및 예측: 20-Fold 교차 검증 앙상블
 - 평가지표: MAE (Mean Absolute Error)
 
 ---
@@ -26,8 +26,6 @@
 - **설립연도 → 연차로 변환**  
   : 현재연도에서 설립연도를 빼서 '연차' 변수 생성
 
-- **수치형 결측값 처리**  
-  : XGBoost에서는 결측값도 의미있는 데이터로 활용되기 때문에 유지
   
 - **범주형 변수 처리**  
   : '국가', '분야'는 Label Encoding 적용
@@ -54,11 +52,11 @@
 
 ## 모델 학습 및 예측 전략
 
-### 1. Optuna 하이퍼파라미터 튜닝 (5-Fold 기준)
+### 1. Optuna 하이퍼파라미터 튜닝
 
 - KFold(n_splits=5) 기반 MAE 최적화  
 - 총 300회 trial을 통해 best hyperparameter 도출  
-- 최적 파라미터: learning_rate, max_depth, subsample, colsample_bytree, lambda, alpha 등
+- 최적 파라미터: learning_rate, max_depth, subsample, colsample_bytree, lambda, alpha
 
 ---
 
@@ -72,16 +70,7 @@
 
 ### 3. 테스트셋 예측 및 앙상블
 
-- 학습된 10개의 모델로 test.csv 예측  
+- 학습된 20개의 모델로 test.csv 예측  
 - 모델별 예측값 평균 → 최종 제출값 생성  
-
----
-
-## 모델 해석
-
-**SHAP 기반 시각화**  
-- 모델의 예측 근거를 설명할 수 있도록 shap.summary_plot 사용  
-
----
 
 

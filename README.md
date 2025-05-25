@@ -4,7 +4,12 @@ This project was developed during an AI hackathon to predict the success probabi
 Using various financial and operational indicators, the model quantifies the likelihood of future success.
 
 #### Project Overview:
-This project uses the XGBoost regression model to predict company success probabilities based on diverse features. Optuna was used to tune hyperparameters, and the evaluation metric was Mean Absolute Error (MAE). The model was trained using a hold-out validation strategy via `train_test_split`.
+This project uses the XGBoost regression model to predict company success probabilities based on diverse features.  
+Optuna was used to tune hyperparameters, and the evaluation metric was Mean Absolute Error (MAE).  
+The model was trained and validated using **Stratified K-Fold Cross Validation**, which preserves the distribution of the target variable across all folds for more reliable evaluation.
+
+#### Final Result:
+
 
 #### Data Preprocessing:
 The original dataset includes the following features:
@@ -22,46 +27,47 @@ The original dataset includes the following features:
 - IPO Status  
 
 Key preprocessing steps are as follows:
-- Year of Establishment was transformed into company age (current year - establishment year).  
-- Categorical variables (Country, Sector) were encoded using LabelEncoder.  
-- Investment Stage was ordinally mapped (e.g., Seed=0 to IPO=4).  
-- Boolean values (Acquisition/IPO status) were converted to 0/1.  
-- Company Valuation strings (e.g., "6000 이상", "2500-3500") were cleaned into numerical values.  
-- Numerical missing values were not explicitly imputed.
+- Converted year of establishment into company age (`2025 - establishment year`)  
+- Applied LabelEncoder to categorical variables (Country, Sector)  
+- Mapped Investment Stage to ordered integers (Seed=0 to IPO=4)  
+- Converted boolean fields (Acquisition/IPO) to 0 and 1  
+- Parsed company valuation from string formats like `"6000+"`, `"2500-3500"` to numerical values  
+- Missing values were not explicitly imputed and may remain in the model inputs
 
 #### Feature Engineering:
-A wide variety of derived features were created to improve model performance. Examples include:
-- Investment per Employee = Total Investment ÷ Number of Employees  
-- Revenue per Employee = Annual Revenue ÷ Number of Employees  
-- Revenue to Investment Ratio = Annual Revenue ÷ Total Investment  
-- Revenue to Customer Ratio = Annual Revenue ÷ Number of Customers  
-- Company Valuation to Investment Ratio, Revenue to Valuation Ratio, etc.  
-- Root of Company Age, Revenue per Social Follower, and more  
-- National and industry-level normalization features (e.g., Revenue ÷ Average of Country)
+Several new features were engineered to enhance predictive power, including:
+- Investment per employee  
+- Revenue per employee  
+- Revenue-to-investment ratio  
+- Revenue-to-customer ratio  
+- Valuation-to-investment ratio  
+- Revenue per SNS follower  
+- Square root of company age  
+- Revenue compared to national/sector averages  
 
-A total of 17 new features were engineered. Only those that contributed meaningfully to performance were included in the final model.
+A total of 17 derived features were created. Only a subset was included in the final model based on performance impact.
 
 #### Features Used in Final Model:
-The final model was trained using the following features:
-- Company Age  
-- Investment per Employee  
-- Revenue per Employee  
-- Revenue to Investment Ratio  
-- Investment to Valuation Ratio  
-- Revenue to Customer Ratio  
-- Root of Company Age  
-- Company Valuation to Investment Ratio  
-- Social Followers to Customers  
-- Social Followers to Valuation  
-- Customers per Employee  
-- Revenue to Valuation Ratio  
-- Revenue to Company Age  
-- Revenue per Follower  
-- Revenue to National Average Ratio  
-- Customers to Sector Average Ratio
+The following features were included in the final training set:
+- Company age  
+- Investment per employee  
+- Revenue per employee  
+- Revenue-to-investment ratio  
+- Investment-to-valuation ratio  
+- Revenue-to-customer ratio  
+- Root of company age  
+- Valuation-to-investment ratio  
+- Followers per customer  
+- Followers per valuation  
+- Customers per employee  
+- Revenue-to-valuation ratio  
+- Revenue-to-age ratio  
+- Revenue per follower  
+- Revenue-to-national-average ratio  
+- Customers-to-sector-average ratio
 
 #### Removed Features:
-The following features were removed due to low impact or multicollinearity:
+The following features were excluded due to low predictive power or multicollinearity:
 - Country  
 - Sector  
 - Investment Stage  
@@ -70,13 +76,13 @@ The following features were removed due to low impact or multicollinearity:
 - Number of Employees  
 - Number of SNS Followers  
 - Annual Revenue  
-- Revenue to Total Investment Ratio  
-- Valuation per Employee  
-- Investment per Age  
-- Customers per Age  
-- Revenue per Customer per Employee
+- Revenue-to-total-investment ratio  
+- Valuation per employee  
+- Investment per age  
+- Customers per age  
+- Revenue per customer per employee
 
-#### Final Results:
-The final model achieved a MAE of approximately 0.2043.  
-Key contributing features included those based on customer count, employee count, company age, and follower-based ratios.  
-Interestingly, the original "Annual Revenue" feature negatively impacted performance and was excluded from the final model, possibly due to overfitting concerns.
+#### Model Training and Tuning:
+Hyperparameter optimization was conducted using Optuna over 300 trials with MAE as the evaluation metric.  
+The model was trained and validated using **Stratified K-Fold Cross Validation**, ensuring balanced distribution of the target variable in each fold.  
+XGBoost was trained using `xgb.train` with DMatrix input, and early stopping was applied with a patience of 50 rounds.

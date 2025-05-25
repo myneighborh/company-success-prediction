@@ -1,76 +1,87 @@
 # AI Hackathon: Company Success Prediction
 
-기업 데이터를 바탕으로 성공 확률(0~1)을 예측하는 해커톤입니다.
-기업의 다양한 지표를 활용하여 미래의 성공 가능성을 수치로 정량화합니다.
+This project was developed during an AI hackathon to predict the success probability of companies (ranging from 0 to 1).  
+Using various financial and operational indicators, the model quantifies the likelihood of future success.
 
----
+#### Project Overview:
+This project uses the XGBoost regression model to predict company success probabilities based on diverse features. Optuna was used to tune hyperparameters, and the evaluation metric was Mean Absolute Error (MAE). The model was trained using a hold-out validation strategy via `train_test_split`.
 
-## 프로젝트 개요
+#### Data Preprocessing:
+The original dataset includes the following features:
+- Country  
+- Sector  
+- Year of Establishment  
+- Investment Stage  
+- Number of Employees  
+- Number of Customers (in millions)  
+- Total Investment (in 100M KRW)  
+- Annual Revenue (in 100M KRW)  
+- Number of SNS Followers (in millions)  
+- Company Valuation (in 100M KRW)  
+- Acquisition Status  
+- IPO Status  
 
-- 데이터: 기업 재무 및 성과 데이터 (train.csv, test.csv)  
-- 목표 변수: 성공확률 (0~1 사이의 연속 값)  
-- 모델: XGBoost Regressor
-- 튜닝: Optuna 기반 하이퍼파라미터 최적화
-- 최종 학습 및 예측: 20-Fold 교차 검증 앙상블
-- 평가지표: MAE (Mean Absolute Error)
+Key preprocessing steps are as follows:
+- Year of Establishment was transformed into company age (current year - establishment year).  
+- Categorical variables (Country, Sector) were encoded using LabelEncoder.  
+- Investment Stage was ordinally mapped (e.g., Seed=0 to IPO=4).  
+- Boolean values (Acquisition/IPO status) were converted to 0/1.  
+- Company Valuation strings (e.g., "6000 이상", "2500-3500") were cleaned into numerical values.  
+- Numerical missing values were not explicitly imputed.
 
----
+#### Feature Engineering:
+A wide variety of derived features were created to improve model performance. Examples include:
+- Investment per Employee = Total Investment ÷ Number of Employees  
+- Revenue per Employee = Annual Revenue ÷ Number of Employees  
+- Revenue to Investment Ratio = Annual Revenue ÷ Total Investment  
+- Revenue to Customer Ratio = Annual Revenue ÷ Number of Customers  
+- Company Valuation to Investment Ratio, Revenue to Valuation Ratio, etc.  
+- Root of Company Age, Revenue per Social Follower, and more  
+- National and industry-level normalization features (e.g., Revenue ÷ Average of Country)
 
-## 전체 파이프라인
+A total of 17 new features were engineered. Only those that contributed meaningfully to performance were included in the final model.
 
-### 1. 데이터 전처리
+#### Features Used in Final Model:
+The final model was trained using the following features:
+- Company Age  
+- Investment per Employee  
+- Revenue per Employee  
+- Revenue to Investment Ratio  
+- Investment to Valuation Ratio  
+- Revenue to Customer Ratio  
+- Root of Company Age  
+- Company Valuation to Investment Ratio  
+- Social Followers to Customers  
+- Social Followers to Valuation  
+- Customers per Employee  
+- Revenue to Valuation Ratio  
+- Revenue to Company Age  
+- Revenue per Follower  
+- Revenue to National Average Ratio  
+- Customers to Sector Average Ratio
 
-- **Origin Features**  
-  : 국가, 분야, 설립연도, 투자단계, 직원 수, 고객수(백만명), 총 투자금(억원), 연매출(억원), SNS 팔로워 수(백만명), 기업가치(백억원), 인수여부, 상장여부
+#### Removed Features:
+The following features were removed due to low impact or multicollinearity:
+- Country  
+- Sector  
+- Investment Stage  
+- Acquisition Status  
+- IPO Status  
+- Number of Employees  
+- Number of SNS Followers  
+- Annual Revenue  
+- Revenue to Total Investment Ratio  
+- Valuation per Employee  
+- Investment per Age  
+- Customers per Age  
+- Revenue per Customer per Employee
 
-- **설립연도 → 연차로 변환**  
-  : 현재연도에서 설립연도를 빼서 '연차' 변수 생성
+#### Model Training and Tuning:
+Optuna was used to tune hyperparameters through 300 trials, minimizing MAE.  
+Data was split using `train_test_split` (80:20), and training was conducted with `xgb.train` using DMatrix format.  
+Early stopping was set to 50 rounds to prevent overfitting.
 
-  
-- **범주형 변수 처리**  
-  : '국가', '분야'는 Label Encoding 적용
-
-- **투자단계 처리**  
-  : Seed, Series A, ..., IPO 순으로 숫자 매핑 (예: Seed=0, Series A=1, ..., IPO=5)
-
-- **불리언 변수 처리**  
-  : 인수여부, 상장여부를 True/False → 1/0으로 변환
-
----
-
-### 2. 피처 엔지니어링
-
-**파생 Feature**
-
-- 
-
-**제거 Feature**
-
-- 
-
----
-
-## 모델 학습 및 예측 전략
-
-### 1. Optuna 하이퍼파라미터 튜닝
-
-- KFold(n_splits=5) 기반 MAE 최적화  
-- 총 300회 trial을 통해 best hyperparameter 도출  
-- 최적 파라미터: learning_rate, max_depth, subsample, colsample_bytree, lambda, alpha
-
----
-
-### 2. 최종 모델 학습 (20-Fold 기준)
-
-- Optuna로 도출된 파라미터로 20-Fold KFold 학습  
-- 각 Fold마다 XGBoost 모델 학습 및 MAE 계산  
-- 평균 MAE로 전체 성능 평가
-
----
-
-### 3. 테스트셋 예측 및 앙상블
-
-- 학습된 20개의 모델로 test.csv 예측  
-- 모델별 예측값 평균 → 최종 제출값 생성  
-
-
+#### Final Results:
+The final model achieved a MAE of approximately 0.2043.  
+Key contributing features included those based on customer count, employee count, company age, and follower-based ratios.  
+Interestingly, the original "Annual Revenue" feature negatively impacted performance and was excluded from the final model, possibly due to overfitting concerns.

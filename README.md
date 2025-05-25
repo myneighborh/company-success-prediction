@@ -76,11 +76,6 @@ The following features were removed due to low impact or multicollinearity:
 - Customers per Age  
 - Revenue per Customer per Employee
 
-#### Model Training and Tuning:
-Optuna was used to tune hyperparameters through 300 trials, minimizing MAE.  
-Data was split using `train_test_split` (80:20), and training was conducted with `xgb.train` using DMatrix format.  
-Early stopping was set to 50 rounds to prevent overfitting.
-
 #### Final Results:
 The final model achieved a MAE of approximately 0.2043.  
 Key contributing features included those based on customer count, employee count, company age, and follower-based ratios.  

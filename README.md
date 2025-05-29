@@ -8,8 +8,7 @@ This project uses the XGBoost regression model to predict company success probab
 Optuna was used to tune hyperparameters, and the evaluation metric was Mean Absolute Error (MAE).  
 The model was trained and validated using **Stratified K-Fold Cross Validation**, which preserves the distribution of the target variable across all folds for more reliable evaluation.
 
-#### Final Result:
-
+#### Competition Result:
 
 #### Data Preprocessing:
 The original dataset includes the following features:

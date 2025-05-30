@@ -3,18 +3,18 @@
 This project was developed during an AI hackathon to predict the success probability of companies (ranging from 0 to 1).  
 Using various financial and operational indicators, the model quantifies the likelihood of future success.
 
-#### Project Overview:
+## Project Overview
 This project uses the XGBoost regression model to predict company success probabilities based on diverse features.  
 Optuna was used to tune hyperparameters, and the evaluation metric was Mean Absolute Error (MAE).  
 The model was trained and validated using **Stratified K-Fold Cross Validation**, which preserves the distribution of the target variable across all folds for more reliable evaluation.
 
-#### Competition Results:
+## Competition Results
 | Leaderboard          | Score (Weighted MAE) | Rank        |
 |:----------:|:-------------:|-------------|
 | Public  | 0.20972      | 23 / 593    |
 | Private  | 0.21184      | 23 / 592  |
 
-#### Data Preprocessing:
+## Data Preprocessing
 The original dataset includes the following features:
 - Country  
 - Sector  
@@ -37,7 +37,7 @@ Key preprocessing steps are as follows:
 - Parsed company valuation from string formats like `"6000+"`, `"2500-3500"` to numerical values  
 - Missing values were not explicitly imputed and may remain in the model inputs
 
-#### Feature Engineering:
+## Feature Engineering
 Several new features were engineered to enhance predictive power, including:
 - Investment per employee  
 - Revenue per employee  
@@ -50,7 +50,7 @@ Several new features were engineered to enhance predictive power, including:
 
 A total of 17 derived features were created. Only a subset was included in the final model based on performance impact.
 
-#### Features Used in Final Model:
+## Features Used in Final Model
 The following features were included in the final training set:
 - Company age  
 - Investment per employee  
@@ -69,7 +69,7 @@ The following features were included in the final training set:
 - Revenue-to-national-average ratio  
 - Customers-to-sector-average ratio
 
-#### Removed Features:
+## Removed Features
 The following features were excluded due to low predictive power or multicollinearity:
 - Country  
 - Sector  
@@ -85,7 +85,7 @@ The following features were excluded due to low predictive power or multicolline
 - Customers per age  
 - Revenue per customer per employee
 
-#### Model Training and Tuning:
+## Model Training and Tuning
 Hyperparameter optimization was conducted using Optuna over 300 trials with MAE as the evaluation metric.  
 The model was trained and validated using **Stratified K-Fold Cross Validation**, ensuring balanced distribution of the target variable in each fold.  
 XGBoost was trained using `xgb.train` with DMatrix input, and early stopping was applied with a patience of 50 rounds.

@@ -9,6 +9,10 @@ Optuna was used to tune hyperparameters, and the evaluation metric was Mean Abso
 The model was trained and validated using **Stratified K-Fold Cross Validation**, which preserves the distribution of the target variable across all folds for more reliable evaluation.
 
 #### Competition Results:
+| Leaderboard          | Score (Weighted MAE) | Rank        |
+|:----------:|:-------------:|-------------|
+| Public  | 0.20972      | 23 / 593    |
+| Private  | 0.21184      | 23 / 592  |
 
 #### Data Preprocessing:
 The original dataset includes the following features:
